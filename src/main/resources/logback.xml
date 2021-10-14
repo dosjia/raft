@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<configuration debug="false">
+    <appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender">
+        <encoder>
+            <pattern>%d{yyyy-MM-dd HH:mm:ss.SSS} [%level] [%thread] [%c] - [%M] - %msg%n</pattern>
+        </encoder>
+    </appender>
+    <appender name="FILE" class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <file>./raft.log</file>
+        <append>true</append>
+        <rollingPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedRollingPolicy">
+            <fileNamePattern>./raft_%d{yyyy-MM-dd}.%i.log</fileNamePattern>
+            <!--e日志文件保留天数-->
+            <MaxHistory>30</MaxHistory>
+            <!--e日志文件最大的大小-->
+            <MaxFileSize>50MB</MaxFileSize>
+        </rollingPolicy>
+        <encoder class="ch.qos.logback.classic.encoder.PatternLayoutEncoder">
+            <!--e格式化输出：%d表示日期，%thread表示线程名，%-5level：级别从左显示5个字符宽度%msg：日志消息，%n是换行符-->
+            <pattern>%d{yyyy-MM-dd HH:mm:ss.SSS} [%level] [%thread] [%c] - [%M] [%L] - %msg%n</pattern>
+            <charset>UTF-8</charset>
+        </encoder>
+        <!-- <filter class="ch.qos.logback.classic.filter.LevelFilter">
+             <level>TRACE</level>
+             <onMatch>ACCEPT</onMatch>
+             <onMismatch>DENY</onMismatch>
+         </filter>-->
+    </appender>
+
+    <logger name="com.apache.ibatis" level="DEBUG"/>
+    <logger name="org.springframework" level="INFO"/>
+    <logger name="springfox.documentation" level="INFO"/>
+    <logger name="org.hibernate" level="INFO"/>
+    <logger name="org.mybatis" level="DEBUG"/>
+    <logger name="io.lettuce" level="INFO"/>
+    <logger name="java.sql.Connection" level="WARN"/>
+    <logger name="cn.homecredit.cloud.engineering.persist" level="INFO"/>
+    <logger name="com.ctrip" level="INFO"/>
+    <logger name="org.apache" level="INFO"/>
+    <root level="DEBUG">
+        <appender-ref ref="STDOUT"/>
+        <appender-ref ref="FILE"/>
+    </root>
+
+</configuration>
