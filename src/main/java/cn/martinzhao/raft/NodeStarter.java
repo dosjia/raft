@@ -8,8 +8,10 @@ import io.netty.channel.nio.NioEventLoopGroup;
 import io.netty.channel.socket.nio.NioServerSocketChannel;
 import lombok.extern.slf4j.Slf4j;
 
-import java.util.HashMap;
-import java.util.Map;
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.util.*;
 
 /**
  * @author Martin.Zhao
@@ -18,11 +20,24 @@ import java.util.Map;
  */
 @Slf4j
 public class NodeStarter {
+
+    private static final String NODE_LIST = "node.list";
+
     public static void main(String[] args) {
+        Map<String, String> argsMap = getArguments(args);
+        initConnectorToPeerNode(argsMap);
+        initNodeListener(argsMap);
+    }
+
+    private static void initConnectorToPeerNode(Map<String, String> argsMap) {
+        PeerNodesInfo.peerNodes = initListenerForOtherNodes(argsMap.get(NODE_LIST));
+
+    }
+
+    private static void initNodeListener(Map<String, String> argsMap) {
         EventLoopGroup bossGroup = NodeStarter.getBossGroup();
         ServerBootstrap bootStrap = NodeStarter.getBootStrap();
         EventLoopGroup workerGroup = NodeStarter.getWorkerGroup();
-        Map<String, String> argsMap = getArguments(args);
         int port = Integer.parseInt(argsMap.get("port"));
         new Thread(() -> {
             try {
@@ -40,6 +55,20 @@ public class NodeStarter {
         }).start();
     }
 
+    private static List<PeerNode> initListenerForOtherNodes(String nodeList) {
+        List<PeerNode> nodes = new ArrayList<>();
+        for (String temp : nodeList.split(";")) {
+            String[] node = temp.split(":");
+            PeerNode peerNode = new PeerNode();
+            peerNode.setAddress(node[0]);
+            peerNode.setPort(Integer.parseInt(node[1]));
+            nodes.add(peerNode);
+        }
+        return nodes;
+
+    }
+
+
     private static Map<String, String> getArguments(String[] args) {
         int length = args.length;
         if (length % 2 != 0) {
@@ -53,6 +82,16 @@ public class NodeStarter {
             String key = args[i * 2].trim().substring(1);
             String value = args[i * 2 + 1].trim();
             argsMap.put(key.toLowerCase(), value);
+        }
+        String path = argsMap.getOrDefault("config", "");
+        Properties properties = new Properties();
+        try (InputStream is = new FileInputStream(path + "\\conf.properties")) {
+            properties.load(is);
+            argsMap.put(NODE_LIST, properties.getProperty(NODE_LIST));
+            argsMap.put("machineId", properties.getProperty("machineId"));
+
+        } catch (IOException e) {
+            log.error("Read properties file error. Some properties may not set as you wished. Please config the file path correctly.");
         }
         return argsMap;
     }
