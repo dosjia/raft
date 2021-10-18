@@ -11,7 +11,7 @@ import lombok.Setter;
 @Setter
 @Getter
 public class MessageHeader {
-    private short commandId;
+    private Command commandId;
     private String machineName;
     private int messageLength;
 }
