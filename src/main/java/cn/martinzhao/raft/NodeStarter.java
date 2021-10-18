@@ -1,17 +1,22 @@
 package cn.martinzhao.raft;
 
+import cn.martinzhao.raft.channel.ClientChildChannelInitializer;
+import cn.martinzhao.raft.channel.ServerChildChannelInitializer;
+import io.netty.bootstrap.Bootstrap;
 import io.netty.bootstrap.ServerBootstrap;
 import io.netty.channel.ChannelFuture;
 import io.netty.channel.ChannelOption;
 import io.netty.channel.EventLoopGroup;
 import io.netty.channel.nio.NioEventLoopGroup;
 import io.netty.channel.socket.nio.NioServerSocketChannel;
+import io.netty.channel.socket.nio.NioSocketChannel;
 import lombok.extern.slf4j.Slf4j;
 
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.*;
+import java.util.concurrent.TimeUnit;
 
 /**
  * @author Martin.Zhao
@@ -25,13 +30,29 @@ public class NodeStarter {
 
     public static void main(String[] args) {
         Map<String, String> argsMap = getArguments(args);
-        initConnectorToPeerNode(argsMap);
         initNodeListener(argsMap);
+        initConnectorToPeerNode(argsMap);
     }
 
     private static void initConnectorToPeerNode(Map<String, String> argsMap) {
         PeerNodesInfo.peerNodes = initListenerForOtherNodes(argsMap.get(NODE_LIST));
+        for (PeerNode node : PeerNodesInfo.peerNodes) {
+            ThreadPool.scheduledThreadPool.schedule(() -> {
+                EventLoopGroup group = new NioEventLoopGroup();
+                try {
+                    Bootstrap b = new Bootstrap();
+                    b.group(group).channel(NioSocketChannel.class).option(ChannelOption.TCP_NODELAY, true)
+                            .handler(new ClientChildChannelInitializer());
+                    ChannelFuture f = b.connect(node.getAddress(), node.getPort()).sync();
+                    f.channel().closeFuture().sync();
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                } finally {
+                    group.shutdownGracefully();
+                }
+            }, 300, TimeUnit.MILLISECONDS);
 
+        }
     }
 
     private static void initNodeListener(Map<String, String> argsMap) {
@@ -42,7 +63,7 @@ public class NodeStarter {
         new Thread(() -> {
             try {
                 bootStrap.group(bossGroup, workerGroup).channel(NioServerSocketChannel.class)
-                        .option(ChannelOption.SO_BACKLOG, 1024).childHandler(new ChildChannelInitializer());
+                        .option(ChannelOption.SO_BACKLOG, 1024).childHandler(new ServerChildChannelInitializer());
                 ChannelFuture f = bootStrap.bind(port).sync();
                 log.info("Netty Server started at port " + port);
                 f.channel().closeFuture().sync();
