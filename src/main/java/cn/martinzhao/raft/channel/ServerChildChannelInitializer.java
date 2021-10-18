@@ -1,4 +1,4 @@
-package cn.martinzhao.raft;
+package cn.martinzhao.raft.channel;
 
 import cn.martinzhao.raft.coder.ByteToMessageDecoder;
 import cn.martinzhao.raft.coder.FormatEncoder;
@@ -19,7 +19,7 @@ import lombok.extern.slf4j.Slf4j;
  * @since 2021/10/14
  */
 @Slf4j
-public class ChildChannelInitializer extends ChannelInitializer<SocketChannel> {
+public class ServerChildChannelInitializer extends ChannelInitializer<SocketChannel> {
     private final static int MAX_LENGTH = 2042;
     private final static ByteBuf DELIMITER = Unpooled.copiedBuffer(new byte[]{0x7e});
     private int timeout = 10000;
