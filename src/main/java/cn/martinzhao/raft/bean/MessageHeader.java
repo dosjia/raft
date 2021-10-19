@@ -14,4 +14,13 @@ public class MessageHeader {
     private Command commandId;
     private String machineName;
     private int messageLength;
+
+    public MessageHeader() {
+        super();
+    }
+
+    public MessageHeader(Command command) {
+        super();
+        this.commandId = command;
+    }
 }

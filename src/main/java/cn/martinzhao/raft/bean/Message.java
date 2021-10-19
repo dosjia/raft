@@ -7,23 +7,31 @@ package cn.martinzhao.raft.bean;
  * @since 2021/10/18
  */
 public class Message {
-	private MessageHeader header;
-	private byte[] body;
+    private MessageHeader header;
+    private byte[] body;
 
-	public byte[] getBody() {
-		return body;
-	}
+    public byte[] getBody() {
+        return body;
+    }
 
-	public void setBody(byte[] body) {
-		this.body = body;
-	}
+    public Message() {
+        super();
+    }
 
-	public MessageHeader getHeader() {
-		return header;
-	}
+    public Message(Command command) {
+        this.header = new MessageHeader(command);
+    }
 
-	public void setHeader(MessageHeader header) {
-		this.header = header;
-	}
+    public void setBody(byte[] body) {
+        this.body = body;
+    }
+
+    public MessageHeader getHeader() {
+        return header;
+    }
+
+    public void setHeader(MessageHeader header) {
+        this.header = header;
+    }
 
 }
