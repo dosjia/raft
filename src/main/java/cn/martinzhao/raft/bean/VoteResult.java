@@ -1,4 +1,4 @@
-package cn.martinzhao.raft;
+package cn.martinzhao.raft.bean;
 
 import lombok.Builder;
 

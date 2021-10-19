@@ -1,7 +1,6 @@
-package cn.martinzhao.raft;
+package cn.martinzhao.raft.bean;
 
-import lombok.Getter;
-import lombok.Setter;
+import cn.martinzhao.raft.bean.PeerNode;
 
 import java.util.List;
 
