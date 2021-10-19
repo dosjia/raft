@@ -1,5 +1,6 @@
 package cn.martinzhao.raft.coder;
 
+import cn.martinzhao.raft.bean.Command;
 import cn.martinzhao.raft.bean.Message;
 import cn.martinzhao.raft.bean.MessageHeader;
 import cn.martinzhao.raft.exception.ApplicationBaseException;
@@ -11,6 +12,7 @@ import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.ChannelInboundHandlerAdapter;
 import lombok.extern.slf4j.Slf4j;
 
+import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
 
 /**
@@ -78,6 +80,16 @@ public class ByteToMessageDecoder extends ChannelInboundHandlerAdapter {
     private Message parseSocketMessage(byte[] array) throws ApplicationBaseException {
         Message message = new Message();
         MessageHeader header = new MessageHeader();
+        header.setCommandId(Command.getCommand(Arrays.copyOfRange(array, 0, 2)));
+        int machineNameLength = ByteUtil.bytesToShort(Arrays.copyOfRange(array, 2, 4));
+        header.setMachineName(new String(Arrays.copyOfRange(array, 4, 4 + machineNameLength), StandardCharsets.UTF_8));
+        int messageBodyLength = ByteUtil.bytesToShort(Arrays.copyOfRange(array, 4 + machineNameLength, 6 + machineNameLength));
+        if (messageBodyLength == 0) {
+            message.setBody(new byte[0]);
+        } else {
+            message.setBody(Arrays.copyOfRange(array, 6 + machineNameLength, 6 + machineNameLength + messageBodyLength));
+        }
+
         message.setHeader(header);
         return message;
     }
