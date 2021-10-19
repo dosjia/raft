@@ -6,6 +6,7 @@ import cn.martinzhao.raft.bean.MessageHeader;
 import cn.martinzhao.raft.exception.ApplicationBaseException;
 import cn.martinzhao.raft.exception.ExceptionEnum;
 import cn.martinzhao.raft.util.ByteUtil;
+import cn.martinzhao.raft.util.Constants;
 import cn.martinzhao.raft.util.ReplaceByte;
 import io.netty.buffer.ByteBuf;
 import io.netty.channel.ChannelHandlerContext;
@@ -36,6 +37,7 @@ public class ByteToMessageDecoder extends ChannelInboundHandlerAdapter {
                     array = replaceKeyWords(array);
                     array = validateCheckByte(array);
                     Message message = parseSocketMessage(array);
+                    ctx.channel().attr(Constants.MESSAGE_HEADER_ATTRIBUTE).set(message.getHeader());
                     log.info(message.getHeader().toString());
                     ctx.fireChannelRead(message);
                 } else {
