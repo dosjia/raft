@@ -4,6 +4,7 @@ import cn.martinzhao.raft.bean.LogUnit;
 import cn.martinzhao.raft.bean.NodeStatus;
 
 import java.util.List;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicInteger;
 
 /**
@@ -17,6 +18,7 @@ public class NodeData {
     public static List<LogUnit<Integer>> logs;
     int lastApplied;
     int commitIndex;
+    public volatile static ConcurrentHashMap<String, Boolean> voteResult = new ConcurrentHashMap<>();
     public static AtomicInteger currentTerm;
     public volatile static String votedFor;
     int[] nextStartIndex;
