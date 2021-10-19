@@ -1,6 +1,6 @@
 package cn.martinzhao.raft.processor;
 
-import cn.martinzhao.raft.NodeData;
+import cn.martinzhao.raft.global.NodeData;
 import cn.martinzhao.raft.bean.Command;
 import cn.martinzhao.raft.bean.Message;
 import cn.martinzhao.raft.util.ByteUtil;

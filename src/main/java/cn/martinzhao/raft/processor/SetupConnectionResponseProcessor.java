@@ -1,13 +1,10 @@
 package cn.martinzhao.raft.processor;
 
-import cn.martinzhao.raft.LocalCache;
-import cn.martinzhao.raft.exception.ApplicationBaseException;
-import cn.martinzhao.raft.exception.ExceptionEnum;
+import cn.martinzhao.raft.global.LocalCache;
 import cn.martinzhao.raft.util.ByteUtil;
 import io.netty.channel.ChannelHandlerContext;
 import lombok.extern.slf4j.Slf4j;
 
-import java.io.UnsupportedEncodingException;
 import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
 
