@@ -2,6 +2,7 @@ package cn.martinzhao.raft.handler;
 
 import cn.martinzhao.raft.bean.Message;
 import cn.martinzhao.raft.bean.MessageHeader;
+import cn.martinzhao.raft.processor.RequestVoteRequestProcessor;
 import cn.martinzhao.raft.processor.SetupConnectionRequestProcessor;
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.ByteBufHolder;
@@ -19,6 +20,7 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 public class RequestProcessorHandler extends ChannelInboundHandlerAdapter {
     private SetupConnectionRequestProcessor setupConnectionProcessor = new SetupConnectionRequestProcessor();
+    private RequestVoteRequestProcessor requestVoteRequestProcessor = new RequestVoteRequestProcessor();
 
     @Override
     public void channelRead(ChannelHandlerContext ctx, Object msg) {
@@ -27,10 +29,12 @@ public class RequestProcessorHandler extends ChannelInboundHandlerAdapter {
             MessageHeader messageHeader = message.getHeader();
             switch (messageHeader.getCommandId()) {
                 case CONNECTION_SETUP:
+                    log.debug("Get connection setup request from machine <{}>", message.getHeader().getMachineName());
                     setupConnectionProcessor.channelRead(ctx, message.getBody());
                     break;
-                case CONNECTION_SETUP_ANSWER:
-
+                case REQUEST_VOTE:
+                    log.debug("Get vote request from machine <{}>", message.getHeader().getMachineName());
+                    requestVoteRequestProcessor.channelRead(ctx, message.getBody());
                     break;
                 default:
 
@@ -65,9 +69,7 @@ public class RequestProcessorHandler extends ChannelInboundHandlerAdapter {
             String chStr = ctx.channel().toString();
             int length = msg.readableBytes();
             if (length == 0) {
-                StringBuilder buf = new StringBuilder(chStr.length() + 1 + eventName.length() + 4);
-                buf.append(chStr).append(' ').append(eventName).append(": 0B");
-                return buf.toString();
+                return chStr + ' ' + eventName + ": 0B";
             } else {
                 int rows = length / 16 + (length % 15 == 0 ? 0 : 1) + 4;
                 StringBuilder buf = new StringBuilder(
@@ -90,10 +92,7 @@ public class RequestProcessorHandler extends ChannelInboundHandlerAdapter {
         try {
             int length = content.readableBytes();
             if (length == 0) {
-                StringBuilder buf = new StringBuilder(
-                        chStr.length() + 1 + eventName.length() + 2 + msgStr.length() + 4);
-                buf.append(chStr).append(' ').append(eventName).append(", ").append(msgStr).append(", 0B");
-                return buf.toString();
+                return chStr + ' ' + eventName + ", " + msgStr + ", 0B";
             } else {
                 int rows = length / 16 + (length % 15 == 0 ? 0 : 1) + 4;
                 StringBuilder buf = new StringBuilder(
@@ -113,7 +112,6 @@ public class RequestProcessorHandler extends ChannelInboundHandlerAdapter {
     private static String formatSimple(ChannelHandlerContext ctx, String eventName, Object msg) {
         String chStr = ctx.channel().toString();
         String msgStr = String.valueOf(msg);
-        StringBuilder buf = new StringBuilder(chStr.length() + 1 + eventName.length() + 2 + msgStr.length());
-        return buf.append(chStr).append(' ').append(eventName).append(": ").append(msgStr).toString();
+        return chStr + ' ' + eventName + ": " + msgStr;
     }
 }
