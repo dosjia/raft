@@ -9,6 +9,8 @@ import cn.martinzhao.raft.global.LocalCache;
 import cn.martinzhao.raft.global.NodeData;
 import io.netty.util.internal.StringUtil;
 
+import java.util.concurrent.locks.ReentrantLock;
+
 /**
  * @author Martin.Zhao
  * @version 1.0
@@ -16,16 +18,21 @@ import io.netty.util.internal.StringUtil;
  */
 public class VoteService {
     public VoteResult requestVoteByOtherNode(int term, String candidate, int lastLogTerm, int lastLogIndex) {
+        ReentrantLock lock = new ReentrantLock();
+        lock.lock();
         if (term < NodeData.currentTerm.get()) {
-            return VoteResult.builder().term(NodeData.currentTerm.get()).result(false).build();
+            lock.unlock();
+            return VoteResult.builder().term(NodeData.currentTerm.get()).success(false).build();
         }
         LogUnit<Integer> lastLog = NodeData.logs.get(NodeData.logs.size() - 1);
         if ((StringUtil.isNullOrEmpty(NodeData.votedFor) || NodeData.votedFor.equals(candidate)) && lastLogTerm >= lastLog.getTerm() && lastLogIndex >=
                 lastLog.getIndex()) {
             NodeData.votedFor = candidate;
-            return VoteResult.builder().result(true).term(NodeData.currentTerm.get()).build();
+            lock.unlock();
+            return VoteResult.builder().success(true).term(NodeData.currentTerm.get()).build();
         }
-        return VoteResult.builder().result(false).term(NodeData.currentTerm.get()).build();
+        lock.unlock();
+        return VoteResult.builder().success(false).term(NodeData.currentTerm.get()).build();
     }
 
     public void requestToOtherNodes() {
