@@ -32,7 +32,7 @@ and number only.
 | 0 | Command Id | 2 bytes | - |
 | 2 | Machine Name Length | 2 bytes | support upmost 65535 |
 | 4 | Machine Name |Non fixed length | - |
-| 4 + machine name length | Message Body Length | 2 bytes | Refer to below table |
+| 4 + Message body length | Message Body Length | 2 bytes | Refer to below table |
 
 |15-10|9-0|
 | ---- | -----|
@@ -49,28 +49,22 @@ refer to Command List part.
 
 #### Request of connection setup
 
-Every node should setup connection first with each other node. So node should send request to every node in node list
-when they start.
-
-| Start | Field | Length | Description |
-| ---- | -----| ---- | ---- |
-| 0 | Machine name length | 2 bytes | - |
-| 2 | Machine name of requester | Non fixed | support 65535 upmost |
+Every node should set up connection first with each other node. So node should send request to every node in node list
+when they start. Command id for this message is 0x00 01. There is no information in message body.
 
 #### Response of connection setup
 
-As the protocol of Raft, only follower send this kind of response to leader.
+As the protocol of Raft, only follower send this kind of response to leader. Command id for this message is 0x80 01.
 
 | Start | Field | Length | Description |
 | ---- | -----| ---- | ---- |
 | 0 | Machine name length | 2 bytes | - |
 | 2 | Machine name of server | Non fixed | support 65535 upmost |
 
-
 #### Request for vote of leader
 
 Node can request for leadership when there is no leader detected. The node should raise the term by 1 first and send
-this kind of request to each peer node.
+this kind of request to each peer node. Command id for this message is 0x00 02.
 
 | Start | Field | Length | Description |
 | ---- | -----| ---- | ---- |
@@ -80,17 +74,15 @@ this kind of request to each peer node.
 | 12 | Machine name length | 2 bytes | - |
 | 14 | Machine Name of requester | Non fixed | support 65535 upmost |
 
-
 #### Response for vote of leader
-Response of node when being asked to vote for the requester.
+
+Response of node when being asked to vote for the requester. Command id for this message is 0x80 02.
 
 | Start | Field | Length | Description |
 | ---- | -----| ---- | ---- |
 | 0 | Term | 4 bytes | Term of the host |
 | 4 | Request result | 1 bytes | The result of vote for the requester |
 
-
 #### Request for replication of log
-
 
 #### Response for replication of log
