@@ -217,7 +217,7 @@ public class ByteUtil {
                     l = i + k;
                     if (l >= source.length)
                         break;
-                    if (source[l].equals(replacePair[j].getTarget()[k])) {
+                    if (!source[l].equals(replacePair[j].getTarget()[k])) {
                         break;
                     }
                 }
@@ -318,12 +318,14 @@ public class ByteUtil {
     }
 
     public static byte[] concatBytes(byte[]... args) {
-        int length = 0;
-        for (byte[] temp : args) {
-            length += temp.length;
+        byte[] result = new byte[0];
+        for (byte[] arg : args) {
+            byte[] temp = new byte[result.length + arg.length];
+            System.arraycopy(result, 0, temp, 0, result.length);
+            System.arraycopy(arg, 0, temp, result.length, arg.length);
+            result = temp;
         }
-        byte[] result = new byte[length];
-        //TODO: concat bytes here.
+
         return result;
     }
 }
