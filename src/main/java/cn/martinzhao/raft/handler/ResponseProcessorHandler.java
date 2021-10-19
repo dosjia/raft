@@ -1,5 +1,7 @@
 package cn.martinzhao.raft.handler;
 
+import cn.martinzhao.raft.NodeData;
+import cn.martinzhao.raft.bean.Command;
 import cn.martinzhao.raft.bean.Message;
 import cn.martinzhao.raft.bean.MessageHeader;
 import cn.martinzhao.raft.processor.SetupConnectionResponseProcessor;
@@ -19,7 +21,11 @@ public class ResponseProcessorHandler extends ChannelInboundHandlerAdapter {
     @Override
     public void channelActive(ChannelHandlerContext ctx) {
         log.info("connect successfully.");
-        //TODO: Send connection setup to server
+        Message message = new Message(Command.CONNECTION_SETUP);
+        message.getHeader().setMessageLength(0);
+        message.getHeader().setMachineName(NodeData.machineId);
+        message.setBody(new byte[0]);
+        ctx.channel().writeAndFlush(message);
     }
 
     @Override
@@ -31,6 +37,8 @@ public class ResponseProcessorHandler extends ChannelInboundHandlerAdapter {
             switch (messageHeader.getCommandId()) {
                 case CONNECTION_SETUP_ANSWER:
                     setupConnectionResponseProcessor.channelRead(ctx, message.getBody());
+                    break;
+                case REQUEST_VOTE_ANSWER:
                     break;
                 default:
 
