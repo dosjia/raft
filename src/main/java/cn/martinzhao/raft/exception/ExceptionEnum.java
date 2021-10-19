@@ -13,7 +13,8 @@ import lombok.Getter;
 public enum ExceptionEnum {
 
     SUCCESS(0, "Action performed successfully."),
-    INVALID_DATA(1, "{}");
+    INVALID_DATA(1, "{}"),
+    INVALID_ENCODING(2,"The specified encoding is not supported.");
     //    FAILURE(0, "Action performed failed.");
     private final Integer value;
     private final String message;
