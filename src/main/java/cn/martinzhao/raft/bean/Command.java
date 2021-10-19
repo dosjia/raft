@@ -11,6 +11,7 @@ import java.util.Arrays;
  */
 public enum Command {
     CONNECTION_SETUP(Constants.CONNECTION_SETUP), CONNECTION_SETUP_ANSWER(Constants.CONNECTION_SETUP_ANSWER),
+    REQUEST_VOTE(Constants.REQUEST_VOTE), REQUEST_VOTE_ANSWER(Constants.REQUEST_VOTE_ANSWER),
     ;
     private byte[] command;
 
