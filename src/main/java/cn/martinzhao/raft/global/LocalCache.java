@@ -11,9 +11,12 @@ import java.util.Map;
  * @since 2021/10/15
  */
 public class LocalCache {
+    private LocalCache(){
+
+    }
     /**
      * String key is used for machine name, and value is the object of channel context, which is used for communication
      * to other peer.
      */
-    public static Map<String, ChannelHandlerContext> CONTEXT_HOLDER = new HashMap<>();
+    public static final Map<String, ChannelHandlerContext> CONTEXT_HOLDER = new HashMap<>();
 }
