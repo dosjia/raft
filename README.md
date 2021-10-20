@@ -62,7 +62,6 @@ As the protocol of Raft, only follower send this kind of response to leader. Com
 | 2 | Machine name of server | Non fixed | support 65535 upmost |
 
 #### Request for vote of leader
-
 Node can request for leadership when there is no leader detected. The node should raise the term by 1 first and send
 this kind of request to each peer node. Command id for this message is 0x00 02.
 
@@ -84,5 +83,21 @@ Response of node when being asked to vote for the requester. Command id for this
 | 4 | Request result | 1 bytes | The result of vote for the requester |
 
 #### Request for replication of log
+Request of leader to follower, contains log need to push to follower. Command id for this message is 0x00 03.
+
+| Start | Field | Length | Description |
+| ---- | -----| ---- | ---- |
+| 0 | Term | 4 bytes | Term of the leader |
+| 4 | prevLogTerm | 4 bytes | The term of previous log |
+| 8 | prevLogIndex | 4 bytes | The index of previous log |
+| 12 | leaderCommit | 4 bytes | The commit value of leader |
+| 16 | logSize | 4 bytes | The size of log need to synchronized |
+| 20 | logValue[] | 4 bytes * logSize | The value array of log |
 
 #### Response for replication of log
+Response of follower to leader, contains the synchronized status. Command id for this message is 0x80 03.
+
+| Start | Field | Length | Description |
+| ---- | -----| ---- | ---- |
+| 0 | term | 4 bytes | currentTerm of the receiver |
+| 4 | synchronizeResult | 1 bytes | The result of synchronization |
