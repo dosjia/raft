@@ -91,8 +91,18 @@ Request of leader to follower, contains log need to push to follower. Command id
 | 4 | prevLogTerm | 4 bytes | The term of previous log |
 | 8 | prevLogIndex | 4 bytes | The index of previous log |
 | 12 | leaderCommit | 4 bytes | The commit value of leader |
-| 16 | logSize | 4 bytes | The size of log need to synchronized |
-| 20 | logValue[] | 4 bytes * logSize | The value array of log |
+| 16 | logCount | 4 bytes | The size of log need to synchronized |
+| 20 | logList[] | 1 log item's bytes * logCount | The value array of log |
+
+In the logList variable, each of them is a log item. For each log item, please refer to below table.
+
+| Start | Field | Length | Description |
+| ---- | -----| ---- | ---- |
+| 0 | term | 4 bytes | The term of the log |
+| 4 | index | 4 bytes | The index of the log |
+| 8 | logContentLength | 2 bytes | The length of the log |
+| 10 | logContent | logContentLength bytes | The content of the log |
+
 
 #### Response for replication of log
 Response of follower to leader, contains the synchronized status. Command id for this message is 0x80 03.

@@ -4,6 +4,7 @@ import cn.martinzhao.raft.bean.Message;
 import cn.martinzhao.raft.bean.MessageHeader;
 import cn.martinzhao.raft.processor.RequestVoteRequestProcessor;
 import cn.martinzhao.raft.processor.SetupConnectionRequestProcessor;
+import cn.martinzhao.raft.processor.SyncLogRequestProcessor;
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.ByteBufHolder;
 import io.netty.buffer.ByteBufUtil;
@@ -21,6 +22,7 @@ import lombok.extern.slf4j.Slf4j;
 public class RequestProcessorHandler extends ChannelInboundHandlerAdapter {
     private SetupConnectionRequestProcessor setupConnectionProcessor = new SetupConnectionRequestProcessor();
     private RequestVoteRequestProcessor requestVoteRequestProcessor = new RequestVoteRequestProcessor();
+    private SyncLogRequestProcessor syncLogRequestProcessor = new SyncLogRequestProcessor();
 
     @Override
     public void channelRead(ChannelHandlerContext ctx, Object msg) {
@@ -36,6 +38,10 @@ public class RequestProcessorHandler extends ChannelInboundHandlerAdapter {
                     log.debug("Get vote request from machine <{}>", message.getHeader().getMachineName());
                     requestVoteRequestProcessor.channelRead(ctx, message.getBody());
                     break;
+                case REQUEST_SYNC_LOG:
+                    log.debug("Get log synchronize request from machine<{}>", message.getHeader().getMachineName());
+                    syncLogRequestProcessor.channelRead(ctx, message.getBody());
+                    break;
                 default:
 
             }
@@ -46,11 +52,9 @@ public class RequestProcessorHandler extends ChannelInboundHandlerAdapter {
 
     @Override
     public void exceptionCaught(ChannelHandlerContext ctx, Throwable cause) {
-//        if (!ctx.channel().remoteAddress().toString().startsWith("/" + ignorePrefix)) {
         log.debug("=====================Exception thrown======================");
         cause.printStackTrace();
         log.error(format(ctx, "EXCEPTION", cause), cause);
-//        }
         ctx.close();
     }
 

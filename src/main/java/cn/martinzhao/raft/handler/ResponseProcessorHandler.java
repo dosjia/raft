@@ -6,6 +6,7 @@ import cn.martinzhao.raft.bean.MessageHeader;
 import cn.martinzhao.raft.global.NodeData;
 import cn.martinzhao.raft.processor.RequestVoteResponseProcessor;
 import cn.martinzhao.raft.processor.SetupConnectionResponseProcessor;
+import cn.martinzhao.raft.processor.SyncLogResponseProcessor;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.ChannelInboundHandlerAdapter;
 import lombok.extern.slf4j.Slf4j;
@@ -19,6 +20,7 @@ import lombok.extern.slf4j.Slf4j;
 public class ResponseProcessorHandler extends ChannelInboundHandlerAdapter {
     private SetupConnectionResponseProcessor setupConnectionResponseProcessor = new SetupConnectionResponseProcessor();
     private RequestVoteResponseProcessor requestVoteResponseProcessor = new RequestVoteResponseProcessor();
+    private SyncLogResponseProcessor syncLogResponseProcessor = new SyncLogResponseProcessor();
 
     @Override
     public void channelActive(ChannelHandlerContext ctx) {
@@ -44,6 +46,10 @@ public class ResponseProcessorHandler extends ChannelInboundHandlerAdapter {
                 case REQUEST_VOTE_ANSWER:
                     log.debug("Get vote response from machine <{}>", message.getHeader().getMachineName());
                     requestVoteResponseProcessor.channelRead(ctx, message.getBody());
+                    break;
+                case REQUEST_SYNC_LOG_ANSWER:
+                    log.debug("Get synchronize log response from machine<{}>", messageHeader.getMachineName());
+                    syncLogResponseProcessor.channelRead(ctx, message.getBody());
                     break;
                 default:
 

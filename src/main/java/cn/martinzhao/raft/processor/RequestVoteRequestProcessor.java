@@ -3,7 +3,7 @@ package cn.martinzhao.raft.processor;
 import cn.martinzhao.raft.bean.Command;
 import cn.martinzhao.raft.bean.Message;
 import cn.martinzhao.raft.bean.MessageHeader;
-import cn.martinzhao.raft.bean.so.VoteResult;
+import cn.martinzhao.raft.bean.so.RequestForVoteResponseBody;
 import cn.martinzhao.raft.global.NodeData;
 import cn.martinzhao.raft.service.VoteService;
 import cn.martinzhao.raft.util.ByteUtil;
@@ -29,7 +29,7 @@ public class RequestVoteRequestProcessor implements IProcessor {
         int termOfLastLog = ByteUtil.byteArrayToInt(Arrays.copyOfRange(msg, 4, 8));
         int indexOfLastLog = ByteUtil.byteArrayToInt(Arrays.copyOfRange(msg, 8, 12));
         log.debug("Vote request from machine <{}>.", header.getMachineName());
-        VoteResult result = voteService.requestVoteByOtherNode(term, header.getMachineName(), termOfLastLog, indexOfLastLog);
+        RequestForVoteResponseBody result = voteService.requestVoteByOtherNode(term, header.getMachineName(), termOfLastLog, indexOfLastLog);
         log.debug("Vote request from machine <{}> with result {}", header.getMachineName(), result.isSuccess());
         Message message = new Message(Command.REQUEST_VOTE_ANSWER);
         message.getHeader().setMachineName(NodeData.MACHINE_ID);

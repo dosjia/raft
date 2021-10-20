@@ -3,8 +3,8 @@ package cn.martinzhao.raft.service;
 import cn.martinzhao.raft.bean.Command;
 import cn.martinzhao.raft.bean.LogUnit;
 import cn.martinzhao.raft.bean.Message;
-import cn.martinzhao.raft.bean.so.VoteResult;
 import cn.martinzhao.raft.bean.so.RequestForVoteRequestBody;
+import cn.martinzhao.raft.bean.so.RequestForVoteResponseBody;
 import cn.martinzhao.raft.global.LocalCache;
 import cn.martinzhao.raft.global.NodeData;
 import io.netty.util.internal.StringUtil;
@@ -17,14 +17,14 @@ import java.util.concurrent.locks.ReentrantLock;
  * @since 2021/10/15
  */
 public class VoteService {
-    public VoteResult requestVoteByOtherNode(int term, String candidate, int lastLogTerm, int lastLogIndex) {
+    public RequestForVoteResponseBody requestVoteByOtherNode(int term, String candidate, int lastLogTerm, int lastLogIndex) {
         ReentrantLock lock = new ReentrantLock();
         lock.lock();
         if (term < NodeData.currentTerm.get()) {
             lock.unlock();
-            return VoteResult.builder().term(NodeData.currentTerm.get()).success(false).build();
+            return RequestForVoteResponseBody.builder().term(NodeData.currentTerm.get()).success(false).build();
         }
-        LogUnit<Integer> lastLog;
+        LogUnit<String> lastLog;
         if (NodeData.logs == null || NodeData.logs.isEmpty()) {
             lastLog = null;
         } else {
@@ -35,16 +35,16 @@ public class VoteService {
                 lastLogIndex >= (lastLog == null ? 0 : lastLog.getIndex())) {
             NodeData.votedFor = candidate;
             lock.unlock();
-            return VoteResult.builder().success(true).term(NodeData.currentTerm.get()).build();
+            return RequestForVoteResponseBody.builder().success(true).term(NodeData.currentTerm.get()).build();
         }
         lock.unlock();
-        return VoteResult.builder().success(false).term(NodeData.currentTerm.get()).build();
+        return RequestForVoteResponseBody.builder().success(false).term(NodeData.currentTerm.get()).build();
     }
 
     public void requestToOtherNodes() {
         Message message = new Message(Command.REQUEST_VOTE);
         message.getHeader().setMachineName(NodeData.MACHINE_ID);
-        LogUnit<Integer> lastLog;
+        LogUnit<String> lastLog;
         if (NodeData.logs == null || NodeData.logs.isEmpty()) {
             lastLog = null;
         } else {
@@ -55,6 +55,13 @@ public class VoteService {
                 .indexOfLastLog(lastLog == null ? 0 : lastLog.getIndex()).termOfLastLog(lastLog == null ? 0 : lastLog
                         .getTerm()).build();
         message.setBody(body.parseToBytes());
+        LocalCache.CONTEXT_HOLDER.values().forEach(item -> item.channel().writeAndFlush(message));
+    }
+
+    public void synchronizeLogToOtherNodes() {
+        Message message = new Message(Command.REQUEST_SYNC_LOG);
+        message.getHeader().setMachineName(NodeData.MACHINE_ID);
+
         LocalCache.CONTEXT_HOLDER.values().forEach(item -> item.channel().writeAndFlush(message));
     }
 

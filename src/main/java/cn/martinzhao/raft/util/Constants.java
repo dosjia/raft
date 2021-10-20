@@ -10,6 +10,8 @@ public class Constants {
     public static byte[] CONNECTION_SETUP_ANSWER = {(byte) 0x80, 0x01};
     public static byte[] REQUEST_VOTE = {0x00, 0x02};
     public static byte[] REQUEST_VOTE_ANSWER = {(byte) 0x80, 0x02};
+    public static byte[] REQUEST_SYNC_LOG = {0x00, 0x03};
+    public static byte[] REQUEST_SYNC_LOG_ANSWER = {(byte) 0x80, 0x03};
 
     public static final String MESSAGE_HEADER_KEY = "MessageHeader";
     public static final AttributeKey<MessageHeader> MESSAGE_HEADER_ATTRIBUTE = AttributeKey
