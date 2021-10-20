@@ -20,8 +20,8 @@ import lombok.extern.slf4j.Slf4j;
  */
 @Slf4j
 public class ServerChildChannelInitializer extends ChannelInitializer<SocketChannel> {
-    private final static int MAX_LENGTH = 2042;
-    private final static ByteBuf DELIMITER = Unpooled.copiedBuffer(new byte[]{0x7e});
+    private static final int MAX_LENGTH = 2042;
+    private static final ByteBuf DELIMITER = Unpooled.copiedBuffer(new byte[]{0x7e});
     private int timeout = 10000;
 
     protected void initChannel(SocketChannel ch) {
