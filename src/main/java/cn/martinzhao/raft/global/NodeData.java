@@ -13,13 +13,13 @@ import java.util.concurrent.atomic.AtomicInteger;
  * @since 2021/10/15
  */
 public class NodeData {
-    public static String machineId;
-    public volatile static NodeStatus status = NodeStatus.CANDIDATE;
+    public static String MACHINE_ID;
+    public static NodeStatus status = NodeStatus.CANDIDATE;
     public static List<LogUnit<Integer>> logs;
     int lastApplied;
     int commitIndex;
     public volatile static ConcurrentHashMap<String, Boolean> voteResult = new ConcurrentHashMap<>();
-    public static AtomicInteger currentTerm;
+    public static AtomicInteger currentTerm = new AtomicInteger(0);
     public volatile static String votedFor;
     int[] nextStartIndex;
     int[] nextEndIndex;
