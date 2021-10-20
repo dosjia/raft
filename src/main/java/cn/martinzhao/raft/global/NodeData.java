@@ -16,8 +16,8 @@ public class NodeData {
     public static String MACHINE_ID;
     public static NodeStatus status = NodeStatus.CANDIDATE;
     public static List<LogUnit<String>> logs;
-    int lastApplied;
-    int commitIndex;
+    public static LogUnit<String> lastApplied;
+    public static int commitIndex;
     public volatile static ConcurrentHashMap<String, Boolean> voteResult = new ConcurrentHashMap<>();
     public static AtomicInteger currentTerm = new AtomicInteger(0);
     public volatile static String votedFor;

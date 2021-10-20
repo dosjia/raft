@@ -2,7 +2,10 @@ package cn.martinzhao.raft.bean.so;
 
 import cn.martinzhao.raft.bean.LogUnit;
 import cn.martinzhao.raft.util.ByteUtil;
+import lombok.Getter;
+import lombok.Setter;
 
+import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
 
 /**
@@ -10,6 +13,8 @@ import java.util.Arrays;
  * @version 1.0
  * @since 2021/10/20
  */
+@Setter
+@Getter
 public class SynchronizeLogRequestBody implements ISocketInput, ISocketOutput {
     private int term;
     private int prevLogTerm;
@@ -38,6 +43,14 @@ public class SynchronizeLogRequestBody implements ISocketInput, ISocketOutput {
 
     @Override
     public byte[] parseToBytes() {
-        return new byte[0];
+        byte[] result;
+        result = ByteUtil.concatBytes(ByteUtil.intToByteArray(term), ByteUtil.intToByteArray(prevLogTerm),
+                ByteUtil.intToByteArray(prevLogIndex), ByteUtil.intToByteArray(leaderCommit), ByteUtil.intToByteArray(logs.length));
+        for (int i = 0; i < logs.length; i++) {
+            result = ByteUtil.concatBytes(result, ByteUtil.intToByteArray(logs[i].getTerm()), ByteUtil.intToByteArray(logs[i].getIndex()),
+                    ByteUtil.intToByteArray(logs[i].getContent().getBytes(StandardCharsets.UTF_8).length),
+                    logs[i].getContent().getBytes(StandardCharsets.UTF_8));
+        }
+        return result;
     }
 }

@@ -10,6 +10,7 @@ import io.netty.channel.ChannelHandlerContext;
 public class SyncLogResponseProcessor implements IProcessor {
     @Override
     public void channelRead(ChannelHandlerContext ctx, byte[] msg) {
+
         //TODO: Add logic to process synchronize log response.
     }
 }

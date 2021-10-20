@@ -158,6 +158,7 @@ public class NodeStarter {
                         break;
                     case LEADER:
                         //send heartbeat
+                        service.sendToFollower();
                         break;
                     case CANDIDATE:
                         //Get node list

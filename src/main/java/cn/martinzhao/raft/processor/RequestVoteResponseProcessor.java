@@ -33,7 +33,7 @@ public class RequestVoteResponseProcessor implements IProcessor {
             log.info("Machine with name <{}> becomes a leader.", header.getMachineName());
             //TODO: inform other node of this success.
 
-            service.synchronizeLogToOtherNodes();
+            service.sendToFollower();
         }
     }
 }
