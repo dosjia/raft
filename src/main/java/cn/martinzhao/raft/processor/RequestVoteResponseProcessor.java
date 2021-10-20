@@ -2,7 +2,7 @@ package cn.martinzhao.raft.processor;
 
 import cn.martinzhao.raft.bean.MessageHeader;
 import cn.martinzhao.raft.bean.NodeStatus;
-import cn.martinzhao.raft.bean.VoteResult;
+import cn.martinzhao.raft.bean.so.VoteResult;
 import cn.martinzhao.raft.global.NodeData;
 import cn.martinzhao.raft.util.Constants;
 import io.netty.channel.ChannelHandlerContext;
