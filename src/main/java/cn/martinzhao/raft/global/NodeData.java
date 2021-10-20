@@ -15,7 +15,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 public class NodeData {
     public static String MACHINE_ID;
     public static NodeStatus status = NodeStatus.CANDIDATE;
-    public static List<LogUnit<Integer>> logs;
+    public static List<LogUnit<String>> logs;
     int lastApplied;
     int commitIndex;
     public volatile static ConcurrentHashMap<String, Boolean> voteResult = new ConcurrentHashMap<>();
