@@ -25,7 +25,7 @@ public class ResponseProcessorHandler extends ChannelInboundHandlerAdapter {
         log.info("connect successfully.");
         Message message = new Message(Command.CONNECTION_SETUP);
         message.getHeader().setMessageLength(0);
-        message.getHeader().setMachineName(NodeData.machineId);
+        message.getHeader().setMachineName(NodeData.MACHINE_ID);
         message.setBody(new byte[0]);
         ctx.channel().writeAndFlush(message);
     }
