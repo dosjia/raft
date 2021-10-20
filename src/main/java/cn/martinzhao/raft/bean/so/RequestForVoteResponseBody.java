@@ -13,7 +13,7 @@ import java.util.Arrays;
  */
 @Builder
 @Getter
-public class VoteResult implements ISocketInput, ISocketOutput {
+public class RequestForVoteResponseBody implements ISocketInput, ISocketOutput {
     int term;
     boolean success;
 
@@ -31,7 +31,7 @@ public class VoteResult implements ISocketInput, ISocketOutput {
         bytes[1] = temp[1];
         bytes[2] = temp[2];
         bytes[3] = temp[3];
-        bytes[4] = success ? 0x0 : (byte) 0x01;
+        bytes[4] = success ? (byte) 0x01 : 0x0;
         return bytes;
     }
 }
