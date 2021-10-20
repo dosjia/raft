@@ -18,8 +18,8 @@ import io.netty.handler.timeout.IdleStateHandler;
  * @since 2021/10/18
  */
 public class ClientChildChannelInitializer extends ChannelInitializer<SocketChannel> {
-    private final static int MAX_LENGTH = 2042;
-    private final static ByteBuf DELIMITER = Unpooled.copiedBuffer(new byte[]{0x7e});
+    private static final int MAX_LENGTH = 2042;
+    private static final ByteBuf DELIMITER = Unpooled.copiedBuffer(new byte[]{0x7e});
     private int timeout = 10000;
 
     @Override
