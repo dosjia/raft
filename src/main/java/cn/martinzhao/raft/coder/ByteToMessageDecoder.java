@@ -63,7 +63,7 @@ public class ByteToMessageDecoder extends ChannelInboundHandlerAdapter {
         Byte[] target2 = {0x7d, 0x01};
         replace2.setTarget(target2);
         ReplaceByte[] replaces = new ReplaceByte[]{replace1, replace2};
-        Byte[] result = ByteUtil.RepalceByteArray(ByteUtil.toObjects(array), replaces);
+        Byte[] result = ByteUtil.replaceByteArray(ByteUtil.toObjects(array), replaces);
         return ByteUtil.toPrimitives(result);
     }
 
@@ -94,11 +94,6 @@ public class ByteToMessageDecoder extends ChannelInboundHandlerAdapter {
 
         message.setHeader(header);
         return message;
-    }
-
-
-    private MessageHeader processProperties(MessageHeader header, byte[] original) throws ApplicationBaseException {
-        return header;
     }
 
 }
