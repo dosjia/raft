@@ -9,5 +9,9 @@ import java.util.concurrent.ScheduledExecutorService;
  * @since 2021/10/18
  */
 public class ThreadPool {
-    public static ScheduledExecutorService scheduledThreadPool = Executors.newScheduledThreadPool(3);
+    private ThreadPool() {
+
+    }
+
+    public static final ScheduledExecutorService scheduledThreadPool = Executors.newScheduledThreadPool(3);
 }
