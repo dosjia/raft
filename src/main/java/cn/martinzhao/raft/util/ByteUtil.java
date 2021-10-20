@@ -16,6 +16,10 @@ import java.util.List;
  */
 @Slf4j
 public class ByteUtil {
+    private ByteUtil() {
+
+    }
+
     private static final char[] HEX_CHAR = {'0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'a', 'b', 'c', 'd', 'e',
             'f'};
 
@@ -206,7 +210,7 @@ public class ByteUtil {
 
     }
 
-    public static Byte[] RepalceByteArray(Byte[] source, ReplaceByte[] replacePair) {
+    public static Byte[] replaceByteArray(Byte[] source, ReplaceByte[] replacePair) {
         int i, j, k, l, m;
         List<Byte> result = new ArrayList<>();
         for (i = 0; i < source.length; ) {
@@ -255,7 +259,7 @@ public class ByteUtil {
         return bytes;
     }
 
-    public static byte setByteByBit(byte source, int position, boolean value) {
+    public static byte setByteByBit(byte source, int position) {
         byte temp1 = source;
         temp1 = (byte) (((byte) (temp1 >>> position)) << position);
         byte temp2 = 0x00;
@@ -295,7 +299,7 @@ public class ByteUtil {
         Byte[] target2 = {0x7d};
         replace2.setTarget(target2);
         ReplaceByte[] replaces = new ReplaceByte[]{replace1, replace2};
-        Byte[] result = ByteUtil.RepalceByteArray(ByteUtil.toObjects(array), replaces);
+        Byte[] result = ByteUtil.replaceByteArray(ByteUtil.toObjects(array), replaces);
         return ByteUtil.toPrimitives(result);
     }
 
