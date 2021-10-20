@@ -18,8 +18,8 @@ import java.nio.charset.StandardCharsets;
 public class SetupConnectionRequestProcessor implements IProcessor {
     public void channelRead(ChannelHandlerContext ctx, byte[] msg) {
         Message message = new Message(Command.CONNECTION_SETUP_ANSWER);
-        message.getHeader().setMachineName(NodeData.machineId);
-        byte[] name = NodeData.machineId.getBytes(StandardCharsets.UTF_8);
+        message.getHeader().setMachineName(NodeData.MACHINE_ID);
+        byte[] name = NodeData.MACHINE_ID.getBytes(StandardCharsets.UTF_8);
         message.setBody(ByteUtil.concatBytes(ByteUtil.shortToBytes((short) name.length), name));
         ctx.channel().writeAndFlush(message);
     }
