@@ -33,6 +33,7 @@ import java.util.concurrent.locks.LockSupport;
 public class NodeStarter {
 
     private static final String NODE_LIST = "node.list";
+    public static final String MACHINE_ID = "machineId";
 
     public static void main(String[] args) {
         Map<String, String> argsMap = getArguments(args);
@@ -54,7 +55,8 @@ public class NodeStarter {
                     ChannelFuture f = b.connect(node.getAddress(), node.getPort()).sync();
                     f.channel().closeFuture().sync();
                 } catch (InterruptedException e) {
-                    e.printStackTrace();
+                    log.error(e.getMessage(), e);
+                    Thread.currentThread().interrupt();
                 } finally {
                     group.shutdownGracefully();
                 }
@@ -76,7 +78,8 @@ public class NodeStarter {
                 log.info("Netty Server started at port " + port);
                 f.channel().closeFuture().sync();
             } catch (Exception e) {
-                e.printStackTrace();
+                log.error(e.getMessage(), e);
+                Thread.currentThread().interrupt();
             } finally {
                 bossGroup.shutdownGracefully();
                 workerGroup.shutdownGracefully();
@@ -117,8 +120,8 @@ public class NodeStarter {
         try (InputStream is = new FileInputStream(path + "\\conf.properties")) {
             properties.load(is);
             argsMap.put(NODE_LIST, properties.getProperty(NODE_LIST));
-            argsMap.put("machineId", properties.getProperty("machineId"));
-            NodeData.machineId = argsMap.get("machineId");
+            argsMap.put(MACHINE_ID, properties.getProperty(MACHINE_ID));
+            NodeData.MACHINE_ID = argsMap.get(MACHINE_ID);
         } catch (IOException e) {
             log.error("Read properties file error. Some properties may not set as you wished. Please config the file path correctly.");
         }
@@ -141,25 +144,32 @@ public class NodeStarter {
     @Slf4j
     static class NodeStateMachine implements Runnable {
         private VoteService service = new VoteService();
+        private boolean stop = false;
 
         @Override
         public void run() {
-            LockSupport.parkNanos(1000);
-            switch (NodeData.status) {
-                case FOLLOWER:
-                    //check timeout? if timeout then change status to candidate.
-                    break;
-                case LEADER:
-                    //send heartbeat
-                    break;
-                case CANDIDATE:
-                    //Get node list
-                    //raise request to other nodes with foreach
-                    log.debug("Node with name <{}> start to request for vote.", NodeData.machineId);
-                    service.requestToOtherNodes();
-                    break;
-                default:
+            log.info("Node state machine start.");
+            while (!stop) {
+                LockSupport.parkNanos(1000 * 1000 * 1000L);
+                log.debug("Start to check status.");
+                switch (NodeData.status) {
+                    case FOLLOWER:
+                        //check timeout? if timeout then change status to candidate.
+                        break;
+                    case LEADER:
+                        //send heartbeat
+                        break;
+                    case CANDIDATE:
+                        //Get node list
+                        //raise request to other nodes with foreach
+                        log.debug("Node with name <{}> start to request for vote.", NodeData.MACHINE_ID);
+                        service.requestToOtherNodes();
+                        break;
+                    default:
+                        log.warn("Status is not supported.");
+                        stop = true;
 
+                }
             }
 
         }
