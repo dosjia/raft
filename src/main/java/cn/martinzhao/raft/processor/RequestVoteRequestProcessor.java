@@ -1,7 +1,10 @@
 package cn.martinzhao.raft.processor;
 
+import cn.martinzhao.raft.bean.Command;
+import cn.martinzhao.raft.bean.Message;
 import cn.martinzhao.raft.bean.MessageHeader;
-import cn.martinzhao.raft.bean.VoteResult;
+import cn.martinzhao.raft.bean.so.VoteResult;
+import cn.martinzhao.raft.global.NodeData;
 import cn.martinzhao.raft.service.VoteService;
 import cn.martinzhao.raft.util.ByteUtil;
 import cn.martinzhao.raft.util.Constants;
@@ -28,5 +31,10 @@ public class RequestVoteRequestProcessor implements IProcessor {
         log.debug("Vote request from machine <{}>.", header.getMachineName());
         VoteResult result = voteService.requestVoteByOtherNode(term, header.getMachineName(), termOfLastLog, indexOfLastLog);
         log.debug("Vote request from machine <{}> with result {}", header.getMachineName(), result.isSuccess());
+        Message message = new Message(Command.REQUEST_VOTE_ANSWER);
+        message.getHeader().setMachineName(NodeData.MACHINE_ID);
+        message.setBody(result.parseToBytes());
+        log.debug("Send vote response to client.");
+        ctx.channel().writeAndFlush(message);
     }
 }
